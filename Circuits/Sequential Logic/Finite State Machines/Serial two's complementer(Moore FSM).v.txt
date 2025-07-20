@@ -1,0 +1,42 @@
+module top_module (
+    input clk,
+    input areset,
+    input x,
+    output reg z
+); 
+
+    // State encoding
+    typedef enum logic [2:0] {
+        RESET= 3'b000,
+        PASS_THROUGH = 3'b001, // Directly pass input bits
+        FIRST_ONE  = 3'b010,// Start inverting
+        ONE = 3'b011,
+        ZERO = 3'b100
+    } state_t;
+
+    state_t state, next;
+
+    // State transition logic (Combinational)
+    always @(*) begin
+        case(state)
+            RESET: next = (x) ? FIRST_ONE : PASS_THROUGH;
+            PASS_THROUGH: next = (x) ? FIRST_ONE:PASS_THROUGH;
+            FIRST_ONE: next = (x) ? ZERO : ONE;  // Stay in invert state
+            ONE: next = (x) ? ZERO : ONE;
+            ZERO: next = (x) ? ZERO : ONE;
+            default:      next = RESET;
+        endcase
+    end    
+
+    // State register update (Sequential)
+    always @(posedge clk or posedge areset) begin
+        if (areset) 
+            state <= RESET;
+        else 
+            state <= next;
+    end
+
+    // Output logic (Moore FSM: output depends only on state)
+    assign z = (state == FIRST_ONE) || (state == ONE);
+
+endmodule

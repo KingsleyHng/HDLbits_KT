@@ -1,0 +1,17 @@
+module top_module (
+    input clk,
+    input a,
+    input b,
+    output q,
+    output state  );
+
+    reg state_temp;
+
+    always @(posedge clk ) begin
+        state_temp = (a==0 && b==0)? 1'b0:((a==1&& b==1)?1'b1:state_temp );
+    end
+
+    assign state=state_temp;
+    assign q = state?(a~^b):(a^b);
+
+endmodule

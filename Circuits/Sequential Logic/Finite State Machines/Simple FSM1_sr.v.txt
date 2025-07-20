@@ -1,0 +1,45 @@
+// Note the Verilog-1995 module declaration syntax here:
+module top_module(clk, reset, in, out);
+    input clk;
+    input reset;    // Synchronous reset to state B
+    input in;
+    output out;//  
+    reg out;
+
+    // Fill in state name declarations
+	localparam A = 1'b0;
+    localparam B = 1'b1;
+    reg present_state, next_state;
+
+    always @(posedge clk) begin
+        if (reset) begin  
+            present_state <= B;
+        end 
+        else begin
+           present_state <= next_state;
+        end
+    end
+            
+          
+    assign out = (present_state == B);   
+            
+     always @(*) begin      
+            case (present_state)
+                A: if(in) begin
+                   	next_state = A; 
+                   end
+                   else begin
+                    next_state = B; 
+                   end
+                
+                B: if(in) begin
+                   	next_state = B; 
+                   end
+                   else begin
+                    next_state = A; 
+                   end    
+            endcase
+        end
+    
+
+endmodule

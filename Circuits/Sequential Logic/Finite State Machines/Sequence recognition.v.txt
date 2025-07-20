@@ -1,0 +1,53 @@
+module top_module(
+    input clk,
+    input reset,    // Synchronous reset
+    input in,
+    output disc,
+    output flag,
+    output err);
+    
+    parameter IDLE = 0;
+    parameter count1 = 1;
+    parameter count2 = 2;
+    parameter count3 = 3;
+    parameter count4 = 4;    
+    parameter count5 = 5;
+    parameter DISC = 6;
+    parameter FLAG = 7;
+    parameter count6 = 8;
+    parameter ERR = 10;
+    
+    reg[4:0] state, next;
+    
+    
+    always@(*) begin
+        case(state)
+            IDLE: next = in ? count1 : IDLE;
+            count1: next = in ? count2 : IDLE;
+            count2: next = in ? count3 : IDLE;            
+            count3: next = in ? count4 : IDLE;    
+            count4: next = in ? count5 : IDLE;                
+            count5: next = in ? count6 : DISC; 
+            DISC: next = in ? count1 : IDLE;
+            count6: next = in ? ERR : FLAG;   
+            ERR: next = in ? ERR : IDLE;
+            FLAG  : next = in ? count1 : IDLE;
+        endcase               
+    end
+    
+    always@(posedge clk) begin
+        if(reset) begin
+           state <= IDLE; 
+        end
+        
+        else begin
+           state <= next ;
+        end       
+    end
+    
+    assign disc = (state == DISC);
+    assign flag = (state == FLAG);
+    assign  err = (state == ERR);
+    
+
+endmodule

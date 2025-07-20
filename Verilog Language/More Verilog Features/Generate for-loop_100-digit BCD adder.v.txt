@@ -1,0 +1,50 @@
+
+module top_module( 
+    input [399:0] a, b,
+    input cin,
+    output cout,
+    output [399:0] sum
+);
+
+    genvar i;
+    wire [99:0] cout_wire;
+
+    bcd_fadd2 u0 (
+        .a(a[3:0]), 
+        .b(b[3:0]), 
+        .cin(cin), 
+        .sum(sum[3:0]), 
+        .cout(cout_wire[0])
+    );
+
+    generate 
+        for(i = 1; i < 100; i = i + 1) begin : gen_loop
+            bcd_fadd2 u_bcd (
+                .a(a[4*i+: 4]), 
+                .b(b[4*i +: 4]), 
+                .cin(cout_wire[i-1]), 
+                .sum(sum[ 4*i +: 4]), 
+                .cout(cout_wire[i])
+            );     	
+        end
+    endgenerate
+
+    assign cout = cout_wire[99];
+
+endmodule
+
+
+module bcd_fadd2( 
+    input [3:0] a,
+    input [3:0] b,
+    input cin,
+    output [3:0] sum,
+    output cout
+);
+
+    wire [4:0] sum_tmp;
+    assign sum_tmp = a + b + cin;
+    assign sum = (sum_tmp > 9) ? sum_tmp[3:0] + 4'd6 : sum_tmp[3:0];
+    assign cout = (sum_tmp > 9) ? 1 : 0;
+
+endmodule

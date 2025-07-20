@@ -1,0 +1,16 @@
+module top_module (
+    input [7:0] a, b, c, d,
+    output [7:0] min);//
+
+    // assign intermediate_result1 = compare? true: false;
+
+    wire a_min, b_min, c_min, d_min;
+    assign a_min = ((a < b) &&  (a < c) && (a < d)) ? 1 : 0;
+    assign b_min = ((b < a) && (b < c) && (b < d)) ? 1 : 0 ; 
+    assign c_min = ((c < a) && (c < b) && (c < d)) ? 1 : 0 ;  
+    assign d_min = ((d < a) && (d < b) && (d< c)) ? 1 : 0 ; 
+        
+        
+    assign min = a_min ?  a : (b_min ? b:(c_min ? c : d))  ; 
+        
+endmodule

@@ -1,0 +1,48 @@
+module top_module(
+    input clk,
+    input [7:0] in,
+    input reset,    // Synchronous reset
+    output done); //
+
+    localparam [1:0] BYTE1 = 2'b00,
+    				 BYTE2 = 2'b01,
+    				 BYTE3 = 2'b10,
+    				 DONE  = 2'b11;
+
+    reg [1:0] state, next;
+    
+    always@(*)begin
+        case(state)
+        BYTE1: if(in[3]) begin
+            	next = BYTE2;
+           
+       		 	end
+        		else begin
+                    next = BYTE1;
+                
+                end
+        
+            BYTE2: begin next = BYTE3;  end
+       		 
+            BYTE3:  begin next = DONE;end
+        
+            DONE: if (in[3]) begin next = BYTE2;  end
+            else begin next= BYTE1; 		 end
+        endcase
+       		 
+    end
+    
+    
+    always@(posedge clk) begin
+        if(reset)begin
+            state <= BYTE1  ; 
+        end    
+        else begin
+            state <= next;
+        end
+    end
+    
+    
+    assign done = (state == DONE);
+
+endmodule
